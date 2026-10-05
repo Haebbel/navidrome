@@ -8,6 +8,8 @@ import AlbumIcon from '@material-ui/icons/Album'
 import SubMenu from './SubMenu'
 import { humanize, pluralize } from 'inflection'
 import albumLists from '../album/albumLists'
+import songLists, { isSongListActive } from '../song/songLists'
+import MusicNoteIcon from '@material-ui/icons/MusicNote'
 import PlaylistsSubMenu from './PlaylistsSubMenu'
 import LibrarySelector from '../common/LibrarySelector'
 import config from '../config'
@@ -56,6 +58,7 @@ const Menu = ({ dense = false }) => {
   // TODO State is not persisted in mobile when you close the sidebar menu. Move to redux?
   const [state, setState] = useState({
     menuAlbumList: true,
+    menuSongList: true,
     menuPlaylists: true,
     menuSharedPlaylists: true,
   })
@@ -102,6 +105,41 @@ const Menu = ({ dense = false }) => {
     )
   }
 
+  const renderSongMenuItemLink = (type, sl) => {
+    const name = translate(`resources.song.lists.${type}`)
+    return (
+      <MenuItemLink
+        key={type}
+        to={`/song?${sl.params}`}
+        isActive={isSongListActive(type)}
+        activeClassName={classes.active}
+        primaryText={name}
+        leftIcon={sl.icon}
+        sidebarIsOpen={open}
+        dense={dense}
+      />
+    )
+  }
+
+  const renderTopLevelResource = (resource) =>
+    resource.name === 'song' ? (
+      <SubMenu
+        key="song"
+        handleToggle={() => handleToggle('menuSongList')}
+        isOpen={state.menuSongList}
+        sidebarIsOpen={open}
+        name="menu.songList"
+        icon={<MusicNoteIcon />}
+        dense={dense}
+      >
+        {Object.keys(songLists).map((type) =>
+          renderSongMenuItemLink(type, songLists[type]),
+        )}
+      </SubMenu>
+    ) : (
+      renderResourceMenuItemLink(resource)
+    )
+
   const subItems = (subMenu) => (resource) =>
     resource.hasList && resource.options && resource.options.subMenu === subMenu
 
@@ -125,7 +163,7 @@ const Menu = ({ dense = false }) => {
           renderAlbumMenuItemLink(type, albumLists[type]),
         )}
       </SubMenu>
-      {resources.filter(subItems(undefined)).map(renderResourceMenuItemLink)}
+      {resources.filter(subItems(undefined)).map(renderTopLevelResource)}
       {config.devSidebarPlaylists && open ? (
         <>
           <Divider />

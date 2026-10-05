@@ -138,6 +138,24 @@ var _ = Describe("MediaRepository", func() {
 			Expect(count).To(Equal(int64(12)))
 		})
 
+		It("counts played songs when the played filter is present", func() {
+			played, err := adminRepo.GetAll(adminCtx, model.QueryOptions{
+				Filters: mediaFileFilter()["played"]("played", "true"),
+			})
+			Expect(err).ToNot(HaveOccurred())
+			unplayed, err := adminRepo.GetAll(adminCtx, model.QueryOptions{
+				Filters: mediaFileFilter()["played"]("played", "false"),
+			})
+			Expect(err).ToNot(HaveOccurred())
+			Expect(len(played) + len(unplayed)).To(Equal(13))
+			for _, mf := range played {
+				Expect(mf.PlayCount).To(BeNumerically(">", 0))
+			}
+			for _, mf := range unplayed {
+				Expect(mf.PlayCount).To(BeZero())
+			}
+		})
+
 		It("counts unfiltered with the join dropped", func() {
 			Expect(adminRepo.CountAll(adminCtx)).To(Equal(int64(13)))
 		})
