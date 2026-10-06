@@ -10,6 +10,7 @@ import {
   useTranslate,
   NullableBooleanInput,
   usePermissions,
+  useVersion,
 } from 'react-admin'
 import { useMediaQuery } from '@material-ui/core'
 import FavoriteIcon from '@material-ui/icons/Favorite'
@@ -130,12 +131,17 @@ const SongFilter = (props) => {
   )
 }
 
+// Keeps the order of the "random" list stable across pages (see the album list)
+const randomStartingSeed = Math.random().toString()
+
 const SongList = (props) => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const isXsmall = useMediaQuery((theme) => theme.breakpoints.down('xs'))
   const isDesktop = useMediaQuery((theme) => theme.breakpoints.up('md'))
   useResourceRefresh('song')
+  const version = useVersion()
+  const seed = `${randomStartingSeed}-${version}`
 
   const handleRowClick = (id, basePath, record) => {
     dispatch(setTrack(record))
@@ -213,6 +219,7 @@ const SongList = (props) => {
       <List
         {...props}
         sort={{ field: 'title', order: 'ASC' }}
+        filter={{ seed }}
         exporter={false}
         bulkActionButtons={<SongBulkActions />}
         actions={<SongListActions />}

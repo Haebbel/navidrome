@@ -52,6 +52,15 @@
         "playNext": "Play Next",
         "info": "Get Info",
         "instantMix": "Instant Mix"
+      },
+      "lists": {
+        "all": "All",
+        "random": "Random",
+        "recentlyAdded": "Recently Added",
+        "recentlyPlayed": "Recently Played",
+        "mostPlayed": "Most Played",
+        "starred": "Favourites",
+        "topRated": "Top Rated"
       }
     },
     "album": {
@@ -692,6 +701,7 @@
       }
     },
     "albumList": "Albums",
+    "songList": "Songs",
     "playlists": "Playlists",
     "onlyFavourites": "Only show favourites",
     "sharedPlaylists": "Shared Playlists",
